@@ -2,7 +2,7 @@
     import { ipcRenderer, type DesktopCapturerSource } from "electron";
     import Recorder from "./pages/Recorder.svelte";
     import Screens from "./pages/Screens.svelte";
-    import Settings from "./pages/Settings.svelte";
+    // import Settings from "./pages/Settings.svelte";
 
     export let window_name: string;
 
@@ -35,8 +35,8 @@
             <Recorder {sourceId} {inputSources} />
         {:else if window_name === Windows.SCREENS}
             <Screens {sourceId} {inputSources} />
-        {:else if window_name === Windows.SETTINGS}
-            <Settings />
+        <!-- {:else if window_name === Windows.SETTINGS}
+            <Settings /> -->
         {/if}
     {/await}
 </main>
