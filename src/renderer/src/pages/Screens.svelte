@@ -1,12 +1,12 @@
 <script lang="ts">
     import { ipcRenderer, type DesktopCapturerSource } from "electron";
-    import { onMount } from "svelte";
+    // import { onMount } from "svelte";
 
     export let inputSources: DesktopCapturerSource[];
     export let sourceId: string;
 
     let selectedScreen = inputSources.find(source => source.id === sourceId) ?? inputSources[0];
-    let screensWindow: HTMLElement;
+    /* let screensWindow: HTMLElement;
     
     onMount(() => {
         screensWindow.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -21,7 +21,7 @@
             }
         });
     });
-
+    */
     function closeWindow() {
         ipcRenderer.invoke('SECONDARY_WINDOW', { action: 'close', sourceId: selectedScreen.id, screen: 'screens' });
     }
@@ -35,7 +35,7 @@
     }
 </script>
 
-<section bind:this={screensWindow} class="w-full h-[100vh] grid grid-cols-[200px,1fr] border-2 border-slate-400 divide-x-2 divide-slate-400">
+<section class="w-full h-[100vh] grid grid-cols-[200px,1fr] border-2 border-slate-400 divide-x-2 divide-slate-400">
     <aside class="bg-slate-900 h-full flex flex-col justify-between divide-slate-400 divide-y">
         <ul class="max-h-[15.875rem] shadow-inner shadow-slate-950 overflow-y-auto">
             {#each inputSources as source, index}

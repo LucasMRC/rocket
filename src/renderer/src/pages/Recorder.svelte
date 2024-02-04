@@ -86,7 +86,6 @@
 
         if (stream) {
             stream.getAudioTracks()[0].enabled = checked;
-            console.log('audiotracks', stream.getAudioTracks());
         }
     }
 
@@ -96,7 +95,6 @@
 
     function togglePanel() {
         panelOpened = !panelOpened;
-        console.log('holario');
     }
 </script>
 

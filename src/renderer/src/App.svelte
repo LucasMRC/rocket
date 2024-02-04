@@ -23,7 +23,6 @@
     }
 
     ipcRenderer.on('SOURCE_UPDATED', (_event, displayId) => {
-        console.log('Source updated!', displayId);
         sourceId = displayId;
     });
 </script>

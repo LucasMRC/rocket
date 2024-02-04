@@ -109,7 +109,6 @@ ipcMain.handle('SCREEN_SELECTED', (_event, displayId) => {
 });
 
 ipcMain.handle('SECONDARY_WINDOW', (_event, options: SecondaryWindowOptions) => {
-    console.log('secondary window triggered', options);
     if (options.action === 'open') {
         const screen = new BrowserWindow({
             parent: mainWindow,
@@ -147,7 +146,6 @@ ipcMain.handle('SECONDARY_WINDOW', (_event, options: SecondaryWindowOptions) => 
             settingsWindow.hide();
 
         } else {
-            console.log('screen selected triggered', sourceId);
             sourceId = options.sourceId;
             screensPickerWindow.hide();
             mainWindow.webContents.send('SOURCE_UPDATED', sourceId);
