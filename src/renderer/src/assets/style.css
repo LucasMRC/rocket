@@ -29,3 +29,15 @@ input, button, textarea, select {
 p, h1, h2, h3, h4, h5, h6 {
     overflow-wrap: break-word;
 }
+
+::-webkit-scrollbar {
+    width: .25rem;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgb(51 65 85);
+}
+
+::-webkit-scrollbar-track {
+    background: rgb(15 23 42);
+}

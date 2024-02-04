@@ -3,9 +3,10 @@ import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
 
-let sourceId = 1;
+let sourceId: string;
 let mainWindow: BrowserWindow;
 let screensPickerWindow: BrowserWindow;
+let settingsWindow: BrowserWindow;
 
 function createWindow(): void {
     // Create the browser window.
@@ -43,7 +44,6 @@ function createWindow(): void {
     } else {
         mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
     }
-    // mainWindow.webContents.openDevTools();
 }
 
 // This method will be called when Electron has finished
@@ -81,7 +81,7 @@ app.on('window-all-closed', () => {
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
 
-ipcMain.handle('getSources', async () => {
+ipcMain.handle('GET_SOURCES', async () => {
     return await desktopCapturer.getSources({
         types: ['screen'],
         thumbnailSize: {
@@ -91,28 +91,27 @@ ipcMain.handle('getSources', async () => {
     });
 });
 
-ipcMain.handle('showSaveDialog', async () => {
+ipcMain.handle('SHOW_SAVE_DIALOG', async () => {
     return await dialog.showSaveDialog({
         buttonLabel: 'Save video',
         defaultPath: `${Date.now()}.mp4`
     });
 });
 
-ipcMain.handle('getOperatingSystem', () => {
+ipcMain.handle('GET_OPERATIVE_SYSTEMS', () => {
     return process.platform;
 });
 
 
-ipcMain.handle('resizeWindow', (event, size: 'recording' | 'standby') => {
-    const mainWindow = BrowserWindow.fromId(event.sender.id);
-    size === 'recording'
-        ? mainWindow?.setSize(90, 50)
-        : mainWindow?.setSize(400, 200);
+ipcMain.handle('SCREEN_SELECTED', (_event, displayId) => {
+    sourceId = displayId;
+    mainWindow.webContents.send('SOURCE_UPDATED', sourceId);
 });
 
-ipcMain.handle('secondaryWindow', (_event, options: SecondaryWindowOptions) => {
+ipcMain.handle('SECONDARY_WINDOW', (_event, options: SecondaryWindowOptions) => {
+    console.log('secondary window triggered', options);
     if (options.action === 'open') {
-        screensPickerWindow = new BrowserWindow({
+        const screen = new BrowserWindow({
             parent: mainWindow,
             width: 600,
             height: 300,
@@ -129,18 +128,29 @@ ipcMain.handle('secondaryWindow', (_event, options: SecondaryWindowOptions) => {
             },
             ...(process.platform === 'linux' ? { icon } : {})
         });
-        screensPickerWindow.on('ready-to-show', () => {
-            screensPickerWindow.show();
+        const template = `${options.screen}.html`;
+        screen.on('ready-to-show', () => {
+            screen.show();
         });
         if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-            screensPickerWindow.loadURL(`${process.env['ELECTRON_RENDERER_URL']}/screens.html`);
+            screen.loadURL(`${process.env['ELECTRON_RENDERER_URL']}/${template}`);
         } else {
-            screensPickerWindow.loadFile(join(__dirname, '../renderer/screens.html'));
+            screen.loadFile(join(__dirname, `../renderer/${template}`));
         }
-        // screensPickerWindow.webContents.openDevTools();
+        if (options.screen === 'settings') {
+            settingsWindow = screen;
+        } else {
+            screensPickerWindow = screen;
+        }
     } else {
-        sourceId = options.sourceId;
-        mainWindow.webContents.send('source-updated', sourceId);
-        screensPickerWindow.hide();
+        if (options.screen === 'settings') {
+            settingsWindow.hide();
+
+        } else {
+            console.log('screen selected triggered', sourceId);
+            sourceId = options.sourceId;
+            screensPickerWindow.hide();
+            mainWindow.webContents.send('SOURCE_UPDATED', sourceId);
+        }
     }
 });
