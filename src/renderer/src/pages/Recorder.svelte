@@ -108,7 +108,7 @@
         disabled={!sourceId}
         recording={recording}
     />
-    <div class={`flex border border-slate-700 ${recording ? 'gap-1' : 'gap-2'} transition-all items-center ${panelOpened ? 'w-[80%]' : 'w-[5%]'} rounded-md p-1 pl-2 bg-gradient-to-r from-slate-900 to-slate-950 relative z-10`}>
+    <div class={`flex border border-slate-500 ${recording ? 'gap-1' : 'gap-2'} transition-all items-center ${panelOpened ? 'w-[80%]' : 'w-[5%]'} rounded-md p-1 pl-2 bg-gradient-to-r from-slate-900 to-slate-950 relative z-10`}>
         <label>
             <input checked={audioEnabled} type="checkbox" name="mic" on:change={updateAudio} hidden />
             <Icon icon={audioEnabled ? 'audio-on' : 'audio-off'} />
