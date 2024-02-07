@@ -13,6 +13,7 @@
     }
 
     let sourceId: string;
+    let inputSources: DesktopCapturerSource[] = [];
 
     async function getSources(): Promise<DesktopCapturerSource[]> {
         return await ipcRenderer.invoke('GET_SOURCES')
@@ -22,21 +23,21 @@
             });
     }
 
+    getSources().then(sources => {
+        inputSources = sources;
+    });
+
     ipcRenderer.on('SOURCE_UPDATED', (_event, displayId) => {
         sourceId = displayId;
     });
 </script>
 
 <main class="grid h-dvh w-dvw relative">
-    {#await getSources()}
-        <h1>loading</h1>
-    {:then inputSources}
-        {#if window_name === Windows.MAIN}
-            <Recorder {sourceId} {inputSources} />
-        {:else if window_name === Windows.SCREENS}
-            <Screens {sourceId} {inputSources} />
-        <!-- {:else if window_name === Windows.SETTINGS}
-            <Settings /> -->
-        {/if}
-    {/await}
+    {#if window_name === Windows.MAIN}
+        <Recorder {sourceId} {inputSources} />
+    {:else if window_name === Windows.SCREENS}
+        <Screens {sourceId} {inputSources} />
+    <!-- {:else if window_name === Windows.SETTINGS}
+        <Settings /> -->
+    {/if}
 </main>

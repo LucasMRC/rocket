@@ -11,13 +11,15 @@ let settingsWindow: BrowserWindow;
 function createWindow(): void {
     // Create the browser window.
     mainWindow = new BrowserWindow({
-        width: 230,
+        width: 150,
         height: 60,
-        useContentSize: true,
+        useContentSize: false,
+        icon,
+        hasShadow: false,
         frame: false,
         transparent: true,
         alwaysOnTop: true,
-        resizable: true,
+        resizable: false,
         autoHideMenuBar: true,
         webPreferences: {
             preload: join(__dirname, '../preload/index.js'),
@@ -73,9 +75,7 @@ app.whenReady().then(() => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit();
-    }
+    app.quit();
 });
 
 // In this file you can include the rest of your app"s specific main process
@@ -93,8 +93,9 @@ ipcMain.handle('GET_SOURCES', async () => {
 
 ipcMain.handle('SHOW_SAVE_DIALOG', async () => {
     return await dialog.showSaveDialog({
-        buttonLabel: 'Save video',
-        defaultPath: `${Date.now()}.mp4`
+        title: 'Save video',
+        buttonLabel: 'Save',
+        defaultPath: `${Date.now()}.webm`
     });
 });
 
@@ -115,10 +116,13 @@ ipcMain.handle('SECONDARY_WINDOW', (_event, options: SecondaryWindowOptions) => 
             width: 600,
             height: 300,
             transparent: true,
-            useContentSize: true,
             frame: false,
             alwaysOnTop: true,
             autoHideMenuBar: true,
+            movable: true,
+            roundedCorners: true,
+            resizable: false,
+            modal: true,
             webPreferences: {
                 preload: join(__dirname, '../preload/index.js'),
                 nodeIntegration: true,
