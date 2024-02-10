@@ -1,27 +1,11 @@
 <script lang="ts">
     import { ipcRenderer, type DesktopCapturerSource } from "electron";
-    // import { onMount } from "svelte";
 
     export let inputSources: DesktopCapturerSource[];
     export let sourceId: string;
 
-    let selectedScreen = inputSources.find(source => source.id === sourceId) ?? inputSources[0];
-    /* let screensWindow: HTMLElement;
-    
-    onMount(() => {
-        screensWindow.addEventListener('keydown', (e: KeyboardEvent) => {
-            if (e.key === 'Escape') {
-                closeWindow();
-            } else if (e.key === 'ArrowDown') {
-                const index = inputSources.indexOf(selectedScreen);
-                selectedScreen = inputSources[index + 1] ?? inputSources[0];
-            } else if (e.key === 'ArrowUp') {
-                const index = inputSources.indexOf(selectedScreen);
-                selectedScreen = inputSources[index - 1] ?? inputSources[inputSources.length - 1];
-            }
-        });
-    });
-    */
+    $: selectedScreen = inputSources.find(source => source.id === sourceId) ?? inputSources[0];
+
     function closeWindow() {
         ipcRenderer.invoke('SECONDARY_WINDOW', { action: 'close', sourceId: selectedScreen.id, screen: 'screens' });
     }

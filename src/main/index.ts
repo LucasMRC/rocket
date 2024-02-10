@@ -11,8 +11,8 @@ let settingsWindow: BrowserWindow;
 function createWindow(): void {
     // Create the browser window.
     mainWindow = new BrowserWindow({
-        width: 150,
-        height: 60,
+        width: 130,
+        height: 48,
         useContentSize: false,
         icon,
         hasShadow: false,

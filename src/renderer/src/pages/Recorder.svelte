@@ -4,7 +4,9 @@
     import { createInterval, deleteInterval, formatTime } from '../utils';
     import RecordButton from '../components/RecordButton.svelte';
     import Icon from '../components/Icon.svelte';
-
+    import screenIcon from '../assets/screen-filled-svgrepo-com.png';
+    import audioIcon from '../assets/mic-fill-svgrepo-com.png';
+    import muteIcon from '../assets/mic-slash-fill-svgrepo-com.png';
     export let sourceId: string;
     export let inputSources: DesktopCapturerSource[];
 
@@ -98,7 +100,7 @@
     }
 </script>
 
-<section class="h-[30px] my-auto ml-10 w-[100px] flex items-center select-none">
+<section class="my-auto ml-8 flex items-center select-none">
     <RecordButton
         start={startRecording}
         stop={() => {
@@ -108,23 +110,23 @@
         disabled={!sourceId}
         recording={recording}
     />
-    <div class={`flex border border-slate-500 ${recording ? 'gap-1' : 'gap-2'} transition-all items-center ${panelOpened ? 'w-[80%]' : 'w-[5%]'} rounded-md p-1 pl-2 bg-gradient-to-r from-slate-900 to-slate-950 relative z-10`}>
-        <label>
+    <div class={`flex border border-slate-500 gap-1 transition-all items-center ${panelOpened ? 'w-[75%]' : 'w-[5%]'} rounded-md pr-1 py-[0.2rem] pl-2 bg-gradient-to-r from-slate-900 to-slate-950 relative z-10`}>
+        <label class="cursor-pointer">
             <input checked={audioEnabled} type="checkbox" name="mic" on:change={updateAudio} hidden />
-            <Icon icon={audioEnabled ? 'audio-on' : 'audio-off'} />
+            <img src={audioEnabled ? audioIcon : muteIcon} alt="audio toggle" class={`scale-[0.9] w-6 h-6 relative top-[0.4px]${audioEnabled ? ' right-[0.75px]' : ''}`}/>
         </label>
         {#if !recording}
             <div class="flex items-center relative">
-                <p class="text-[0.5rem] leading-[1] bottom-0 text-slate-900 text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-bold pointer-events-none">{sourceIndex}</p>
+                <p class="text-[0.5rem] leading-[1] bottom-0 text-slate-900 text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-bold pointer-events-none">{panelOpened ? sourceIndex : ''}</p>
                 <button class="cursor-pointer" on:click={() => openSecondaryWindow('screens')} disabled={!inputSources.length}>
-                    <Icon icon="display" />
+                    <img src={screenIcon} alt="selected screen" class="w-6 h-6" />
                 </button>
             </div>
             <!-- <button class="cursor-pointer" on:click={() => openSecondaryWindow('settings')} disabled={recording}>
                 <Icon icon="settings" />
             </button> -->
         {:else}
-            <p class={`text-sm text-indigo-300 transition-opacity ${panelOpened ? 'opacity-100' : 'opacity-0'}`}>{formattedTime}</p>
+            <p class={`text-xs text-indigo-300 transition-opacity absolute right-2 ${panelOpened ? 'opacity-100' : 'opacity-0'}`}>{formattedTime}</p>
         {/if}
         <button class="z-20 cursor-pointer absolute -right-3 grid content-center rounded size-4" on:click={togglePanel}>
             <Icon icon="chevron" />

@@ -2,7 +2,6 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/base';
 
-
 *, *::before, *::after {
     box-sizing: border-box;
 }

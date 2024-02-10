@@ -5,9 +5,9 @@
     export let recording: boolean;
 </script>
 
-<button class="z-20 border-2 border-slate-500 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-slate-950 w-12 h-12 absolute left-0 bg-gray-950 shadow-lg grid rounded-full place-items-center cursor-pointer" on:click={!recording ? start : stop} {disabled}>
-    <div class="absolute z-0 w-1/3 h-1/3 bg-red-950 rounded-full border-2 border-red-900"></div>
+<button class="z-20 border border-slate-500 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-slate-950 w-10 h-10 absolute left-0 bg-gray-950 shadow-lg grid rounded-full place-items-center cursor-pointer" on:click={!recording ? start : stop} {disabled}>
+    <div class="absolute z-0 w-[45%] h-[45%] bg-red-950 rounded-full border-2 border-red-900"></div>
     {#if recording}
-        <div class="absolute z-10 w-1/3 h-1/3 bg-red-400 rounded-full animate-record"></div>
+        <div class="absolute z-10 w-[45%] h-[45%] bg-red-400 rounded-full animate-record"></div>
     {/if}
 </button>
