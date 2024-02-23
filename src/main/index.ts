@@ -1,7 +1,7 @@
 import { app, shell, BrowserWindow, desktopCapturer, dialog, ipcMain } from 'electron';
 import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
-import icon from '../../resources/icon.png?asset';
+import icon from '../../resources/icon.ico?asset';
 
 let sourceId: string;
 let mainWindow: BrowserWindow;
@@ -26,8 +26,7 @@ function createWindow(): void {
             nodeIntegration: true,
             contextIsolation: false,
             sandbox: false
-        },
-        ...(process.platform === 'linux' ? { icon } : {})
+        }
     });
 
     mainWindow.on('ready-to-show', () => {
@@ -91,11 +90,11 @@ ipcMain.handle('GET_SOURCES', async () => {
     });
 });
 
-ipcMain.handle('SHOW_SAVE_DIALOG', async () => {
+ipcMain.handle('SHOW_SAVE_DIALOG', async (_, { name, format }) => {
     return await dialog.showSaveDialog({
         title: 'Save video',
         buttonLabel: 'Save',
-        defaultPath: `${Date.now()}.webm`
+        defaultPath: `${name}.${format}`,
     });
 });
 

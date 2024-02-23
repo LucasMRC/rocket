@@ -1,3 +1,5 @@
+export * from './record';
+
 let timeout: NodeJS.Timeout | null = null;
 
 export function formatTime(seconds: number): string {

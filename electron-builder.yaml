@@ -11,6 +11,7 @@ files:
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 asarUnpack:
   - resources/**
+  - node_modules/fluent-ffmpeg
 win:
   executableName: Rocket
 nsis:
@@ -30,9 +31,7 @@ dmg:
   artifactName: ${name}-${version}.${ext}
 linux:
   target:
-    - AppImage
-    - snap
-    - deb
+    - pacman
   maintainer: electronjs.org
   category: Utility
 appImage:
