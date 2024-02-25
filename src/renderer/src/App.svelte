@@ -2,8 +2,27 @@
     import { ipcRenderer, type DesktopCapturerSource } from "electron";
     import Recorder from "./pages/Recorder.svelte";
     import Screens from "./pages/Screens.svelte";
+    import log from 'electron-log/renderer';
+    import electron from 'electron';
     // import Settings from "./pages/Settings.svelte";
-
+    log.errorHandler.startCatching({
+        showDialog: false,
+        onError({ error, processType }) {
+            log.error(processType, error.message);
+            electron.dialog.showMessageBox({
+                title: 'An error occurred',
+                message: error.message,
+                detail: error.stack,
+                type: 'error',
+                buttons: ['Ignore', 'Exit'],
+            })
+                .then((result) => {
+                    if (result.response === 1) {
+                        electron.app.quit();
+                    }
+                });
+        }
+    });
     export let window_name: string;
 
     enum Windows {

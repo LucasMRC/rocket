@@ -2,6 +2,8 @@ import { app, shell, BrowserWindow, desktopCapturer, dialog, ipcMain } from 'ele
 import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.ico?asset';
+import log from 'electron-log/main';
+log.initialize();
 
 let sourceId: string;
 let mainWindow: BrowserWindow;
