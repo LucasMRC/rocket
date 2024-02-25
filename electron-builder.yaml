@@ -11,7 +11,8 @@ files:
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 asarUnpack:
   - resources/**
-  - node_modules/fluent-ffmpeg
+  - node_modules/fluent-ffmpeg/index.js
+  - node_modules/fluent-ffmpeg/package.json
 win:
   executableName: Rocket
 nsis:

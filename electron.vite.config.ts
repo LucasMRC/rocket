@@ -20,6 +20,11 @@ export default defineConfig({
                 plugins: [tailwind(tailwindConfig), autoprefixer]
             }
         },
+        resolve: {
+            alias: {
+                './lib-cov/fluent-ffmpeg': './lib/fluent-ffmpeg'
+            }
+        },
         build: {
             rollupOptions: {
                 input: {
