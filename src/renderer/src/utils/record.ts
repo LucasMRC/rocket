@@ -53,17 +53,21 @@ async function stopRecording(callback: () => void): Promise<void> {
     const { canceled, filePath } = await ipcRenderer.invoke('SHOW_SAVE_DIALOG', { name: filename, format: 'mp4' });
     if (canceled) return callback();
     else if (filePath) {
+        let timer: number;
         ffmpeg
             .input(readableVideoBuffer)
-            .videoCodec('libx264')
-            .audioCodec('libmp3lame')
-            .outputOptions('-max_muxing_queue_size 9999')
+            .outputOptions('-max_muxing_queue_size', '9999', '-r', '10')
             .on('error', function(err: Error) {
                 log.error(err.message);
                 callback();
             })
+            .on('start', function() {
+                timer = Date.now();
+                log.info('Started processing video', filePath);
+            })
             .on('end', function() {
-                console.log('Processing finished!');
+                const timeToProcess = ((Date.now() - timer) / 1000).toFixed(2);
+                log.info(`Processing finished in ${timeToProcess} seconds`);
                 callback();
             })
             .output(filePath)

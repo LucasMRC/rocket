@@ -35,14 +35,11 @@
     let inputSources: DesktopCapturerSource[] = [];
 
     async function getSources(): Promise<DesktopCapturerSource[]> {
-        return await ipcRenderer.invoke('GET_SOURCES')
-            .then(response => {
-                sourceId = response[0].id;
-                return response;
-            });
+        return await ipcRenderer.invoke('GET_SOURCES');
     }
 
     getSources().then(sources => {
+        sourceId = sources[0].id;
         inputSources = sources;
     });
 
