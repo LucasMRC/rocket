@@ -4,7 +4,19 @@
     import Screens from "./pages/Screens.svelte";
     import log from 'electron-log/renderer';
     import electron from 'electron';
-    // import Settings from "./pages/Settings.svelte";
+
+    export let window_name: string;
+
+    enum Windows {
+        MAIN = 'main',
+        SCREENS = 'screens',
+        SETTINGS = 'settings'
+    }
+
+    let sourceId: string;
+    let inputSources: DesktopCapturerSource[] = [];
+
+    // Log unhandled errors
     log.errorHandler.startCatching({
         showDialog: false,
         onError({ error, processType }) {
@@ -23,22 +35,8 @@
                 });
         }
     });
-    export let window_name: string;
 
-    enum Windows {
-        MAIN = 'main',
-        SCREENS = 'screens',
-        SETTINGS = 'settings'
-    }
-
-    let sourceId: string;
-    let inputSources: DesktopCapturerSource[] = [];
-
-    async function getSources(): Promise<DesktopCapturerSource[]> {
-        return await ipcRenderer.invoke('GET_SOURCES');
-    }
-
-    getSources().then(sources => {
+    ipcRenderer.invoke('GET_SOURCES').then(sources => {
         sourceId = sources[0].id;
         inputSources = sources;
     });
@@ -53,7 +51,5 @@
         <Recorder {sourceId} {inputSources} />
     {:else if window_name === Windows.SCREENS}
         <Screens {sourceId} {inputSources} />
-    <!-- {:else if window_name === Windows.SETTINGS}
-        <Settings /> -->
     {/if}
 </main>
