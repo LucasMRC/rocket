@@ -4,6 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.ico?asset';
 import log from 'electron-log/main';
 log.initialize();
+log.info('Main process: Initializing');
 
 let sourceId: string;
 let mainWindow: BrowserWindow;
@@ -76,6 +77,7 @@ app.whenReady().then(() => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
+    log.info('Main process: Shutting down');
     app.quit();
 });
 
@@ -83,6 +85,7 @@ app.on('window-all-closed', () => {
 // code. You can also put them in separate files and require them here.
 
 ipcMain.handle('GET_SOURCES', async () => {
+    log.info('Main process: Requesting sources');
     return await desktopCapturer.getSources({
         types: ['screen'],
         thumbnailSize: {
@@ -93,6 +96,7 @@ ipcMain.handle('GET_SOURCES', async () => {
 });
 
 ipcMain.handle('SHOW_SAVE_DIALOG', async (_, { name, format }) => {
+    log.info('Main process: Opening save dialog');
     return await dialog.showSaveDialog({
         title: 'Save video',
         buttonLabel: 'Save',
@@ -112,6 +116,7 @@ ipcMain.handle('SCREEN_SELECTED', (_event, displayId) => {
 
 ipcMain.handle('SECONDARY_WINDOW', (_event, options: SecondaryWindowOptions) => {
     if (options.action === 'open') {
+        log.info('Main process: Opening secondary window', options.screen);
         const screen = new BrowserWindow({
             parent: mainWindow,
             width: 600,
@@ -147,9 +152,9 @@ ipcMain.handle('SECONDARY_WINDOW', (_event, options: SecondaryWindowOptions) => 
             screensPickerWindow = screen;
         }
     } else {
+        log.info('Main process: Closing secondary window');
         if (options.screen === 'settings') {
             settingsWindow.hide();
-
         } else {
             sourceId = options.sourceId;
             screensPickerWindow.hide();
