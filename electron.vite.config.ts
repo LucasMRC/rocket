@@ -7,31 +7,31 @@ import tailwindConfig from './tailwind.config.js';
 import { resolve } from 'path';
 
 export default defineConfig({
-    main: {
-        plugins: [externalizeDepsPlugin(), renderer()]
-    },
-    preload: {
-        plugins: [externalizeDepsPlugin(), renderer()]
-    },
-    renderer: {
-        plugins: [svelte(), renderer()],
-        css: {
-            postcss: {
-                plugins: [tailwind(tailwindConfig), autoprefixer]
-            }
-        },
-        resolve: {
-            alias: {
-                './lib-cov/fluent-ffmpeg': './lib/fluent-ffmpeg'
-            }
-        },
-        build: {
-            rollupOptions: {
-                input: {
-                    index: resolve(__dirname, 'src/renderer/index.html'),
-                    screens: resolve(__dirname, 'src/renderer/screens.html'),
-                }
-            }
-        }
-    }
+	main: {
+		plugins: [externalizeDepsPlugin(), renderer()]
+	},
+	preload: {
+		plugins: [externalizeDepsPlugin(), renderer()]
+	},
+	renderer: {
+		plugins: [svelte(), renderer()],
+		css: {
+			postcss: {
+				plugins: [tailwind(tailwindConfig), autoprefixer]
+			}
+		},
+		resolve: {
+			alias: {
+				'./lib-cov/fluent-ffmpeg': './lib/fluent-ffmpeg'
+			}
+		},
+		build: {
+			rollupOptions: {
+				input: {
+					index: resolve(__dirname, 'src/renderer/index.html'),
+					screens: resolve(__dirname, 'src/renderer/screens.html'),
+				}
+			}
+		}
+	}
 });

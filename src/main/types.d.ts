@@ -1,11 +1,11 @@
 type SecondaryWindowOptions = {
-    action: 'open';
-    screen: 'settings' | 'screens';
+	action: 'open';
+	screen: 'settings' | 'screens';
 } | {
-    action: 'close';
+	action: 'close';
 } & ({
-    screen: 'screens';
-    sourceId: string;
+	screen: 'screens';
+	sourceId: string;
 } | {
-    screen: 'settings';
+	screen: 'settings';
 }); 
