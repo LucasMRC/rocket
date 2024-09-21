@@ -29,7 +29,7 @@ export default defineConfig({
 			rollupOptions: {
 				input: {
 					index: resolve(__dirname, 'src/renderer/index.html'),
-					screens: resolve(__dirname, 'src/renderer/screens.html'),
+					settings: resolve(__dirname, 'src/renderer/settings.html'),
 				}
 			}
 		}
