@@ -10,6 +10,7 @@ import log from 'electron-log/renderer';
 
 export let sourceId: string;
 export let inputSources: DesktopCapturerSource[];
+export let videoFormat: string;
 
 let mediaRecorder: MediaRecorder;
 let stream: MediaStream;
@@ -32,7 +33,7 @@ $: {
 			mandatory: {
 				chromeMediaSource: 'desktop',
 				chromeMediaSourceId: sourceId
-			} 
+			}
 		}
 	};
 
@@ -49,7 +50,7 @@ $: {
 async function startRecording(): Promise<void> {
 	log.info('Renderer process: Recording started');
 	recording = true;
-	mediaRecorder = createMediaRecorder(stream, audioEnabled, () => { processReady = true; });
+	mediaRecorder = createMediaRecorder(stream, audioEnabled, videoFormat, () => { processReady = true; });
 	mediaRecorder.start();
 	createInterval(() => {
 		++timeRecording;
@@ -99,7 +100,7 @@ function togglePanel() {
 				<div class={`${!panelOpened ? 'pointer-events-none ' : ''}flex items-center relative`}>
 					<p class="text-[0.5rem] leading-[1] bottom-0 text-slate-900 text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-bold pointer-events-none">{panelOpened ? sourceIndex : ''}</p>
 					<img src={screenIcon} alt="selected screen" class="w-6 h-6" />
-					<button class={`${panelOpened ? 'cursor-pointer' : 'cursor-default'} absolute place-items-center w-3 h-3 -translate-x-1/2 left-1/2`} on:click={() => openSecondaryWindow('screens')} disabled={!inputSources.length}>
+					<button class={`${panelOpened ? 'cursor-pointer' : 'cursor-default'} absolute place-items-center w-3 h-3 -translate-x-1/2 left-1/2`} on:click={() => openSecondaryWindow('settings')} disabled={!inputSources.length}>
 					</button>
 				</div>
 			{:else}

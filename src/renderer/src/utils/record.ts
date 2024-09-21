@@ -10,14 +10,14 @@ const { path: ffmpegPath } = require('@ffmpeg-installer/ffmpeg');
 
 let recordedChunks: Blob[] = [];
 
-export function createMediaRecorder(stream: MediaStream, audioEnabled: boolean, onFinished: () => void) {
+export function createMediaRecorder(stream: MediaStream, audioEnabled: boolean, videoFormat, onFinished: () => void) {
 	const options = {
-		mimeType: 'video/webm; codecs=vp9'
-	};
+		mimeType: videoFormat === 'webm' ? 'video/webm; codecs=vp9' : 'video/mp4; codecs="avc1.42E01E"'
+	}
 	stream.getAudioTracks()[0].enabled = audioEnabled;
 	const mediaRecorder = new MediaRecorder(stream, options);
 	mediaRecorder.ondataavailable = onDataAvailable;
-	mediaRecorder.onstop = () => stopRecording(onFinished);
+	mediaRecorder.onstop = () => stopRecording(videoFormat, onFinished);
 	return mediaRecorder;
 };
 
@@ -41,17 +41,17 @@ function onDataAvailable(e: BlobEvent): void {
 	recordedChunks.push(e.data);
 }
 
-async function stopRecording(callback: () => void): Promise<void> {
+async function stopRecording(format, callback: () => void): Promise<void> {
 	log.info('Renderer process: Recording stopped');
 	deleteInterval();
 	const date_time = /(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})/.exec(new Date().toISOString());
 	const filename = `${date_time[1]}_${date_time[2].replace(/:/g, '-')}`;
-	const blob = new Blob(recordedChunks, { type: 'video/webm; codecs=vp9' });
+	const blob = new Blob(recordedChunks, { type: format === 'webm' ? 'video/webm; codecs=vp9' : 'video/mp4; codecs="avc1.42E01E"' });
 	const buffer = Buffer.from(await blob.arrayBuffer());
 	const ffmpeg = loadFfmpeg();
 	const readableVideoBuffer = createReadableVideoBuffer(buffer);
 
-	const { canceled, filePath } = await ipcRenderer.invoke('SHOW_SAVE_DIALOG', { name: filename, format: 'mp4' });
+	const { canceled, filePath } = await ipcRenderer.invoke('SHOW_DIALOG', { action: 'save', name: filename });
 	if (canceled) {
 		log.info('Renderer process: Recording cancelled');
 		return callback();

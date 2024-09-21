@@ -3,13 +3,40 @@ import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.ico?asset';
 import log from 'electron-log/main';
+import fs from 'fs';
+
 log.initialize();
 log.info('Main process: Initializing');
 
 let sourceId: string;
 let mainWindow: BrowserWindow;
-let screensPickerWindow: BrowserWindow;
 let settingsWindow: BrowserWindow;
+let config: Config;
+
+try {
+	const configFile = fs.readFileSync(join(__dirname, '../config.json'), 'utf-8');
+	config = JSON.parse(configFile);
+} catch (error: any) {
+	if (error.code === 'ENOENT') {
+		log.info('Main process: Config file not found, creating new one');
+		config = {
+			format: 'mp4',
+			savePath: '',
+			defaultScreen: 'Screen 1'
+		};
+		fs.writeFileSync(join(__dirname, '../config.json'), JSON.stringify(config, null, 2));
+	} else log.error('Main process: Error reading config file', error);
+}
+
+function updateConfig(newConfig: Config) {
+	log.info('Main process: Updating config');
+	try {
+		fs.writeFileSync(join(__dirname, '../config.json'), JSON.stringify(newConfig, null, 2));
+		config = newConfig;
+	} catch (error: any) {
+		log.error('Main process: Error updating config', error);
+	}
+}
 
 function createWindow(): void {
 	// Create the browser window.
@@ -95,19 +122,34 @@ ipcMain.handle('GET_SOURCES', async () => {
 	});
 });
 
-ipcMain.handle('SHOW_SAVE_DIALOG', async (_, { name, format }) => {
-	log.info('Main process: Opening save dialog');
-	return await dialog.showSaveDialog({
-		title: 'Save video',
-		buttonLabel: 'Save',
-		defaultPath: `${name}.${format}`,
-	});
+ipcMain.handle('GET_CONFIG', () => {
+	log.info('Main process: Requesting config');
+	return config;
+});
+
+ipcMain.handle('SHOW_DIALOG', async (_, { action, name }) => {
+	if (action === 'save') {
+		log.info('Main process: Opening save dialog');
+		return await dialog.showSaveDialog({
+			title: 'Save video',
+			buttonLabel: 'Save',
+			defaultPath: `${config.savePath}/${name}.${config.format}`,
+		});
+	} else if (action === 'change_save_path') {
+		log.info('Main process: Opening change save path dialog');
+		return await dialog.showOpenDialog({
+			title: 'Change save path',
+			buttonLabel: 'Select',
+			properties: ['openDirectory']
+		});
+	}
+	log.error('Main process: Invalid dialog action');
+	return
 });
 
 ipcMain.handle('GET_OPERATIVE_SYSTEMS', () => {
 	return process.platform;
 });
-
 
 ipcMain.handle('SCREEN_SELECTED', (_event, displayId) => {
 	sourceId = displayId;
@@ -120,7 +162,7 @@ ipcMain.handle('SECONDARY_WINDOW', (_event, options: SecondaryWindowOptions) => 
 		const screen = new BrowserWindow({
 			parent: mainWindow,
 			width: 600,
-			height: 300,
+			height: 364,
 			transparent: true,
 			frame: false,
 			alwaysOnTop: true,
@@ -148,16 +190,13 @@ ipcMain.handle('SECONDARY_WINDOW', (_event, options: SecondaryWindowOptions) => 
 		}
 		if (options.screen === 'settings') {
 			settingsWindow = screen;
-		} else {
-			screensPickerWindow = screen;
 		}
 	} else {
 		log.info('Main process: Closing secondary window');
 		if (options.screen === 'settings') {
-			settingsWindow.hide();
-		} else {
+			updateConfig(options.config);
 			sourceId = options.sourceId;
-			screensPickerWindow.hide();
+			settingsWindow.hide();
 			mainWindow.webContents.send('SOURCE_UPDATED', sourceId);
 		}
 	}

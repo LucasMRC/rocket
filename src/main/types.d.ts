@@ -1,11 +1,15 @@
 type SecondaryWindowOptions = {
 	action: 'open';
-	screen: 'settings' | 'screens';
+	screen: 'settings';
 } | {
 	action: 'close';
-} & ({
-	screen: 'screens';
-	sourceId: string;
-} | {
 	screen: 'settings';
-}); 
+	config: Config;
+	sourceId: string;
+}; 
+
+type Config = {
+	savePath: string;
+	format: string;
+	defaultScreen: string;
+};
